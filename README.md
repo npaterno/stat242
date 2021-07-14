@@ -1,3 +1,5 @@
+<img src="man/figures/stat242_sticker.png" align="right" height="170">
+
 # Fall/Spring Semester Labs
 Set of R labs for Math/Stat 242 at Pacific Lutheran University. 
 
