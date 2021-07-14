@@ -1,0 +1,45 @@
+---
+title: "My First R Markdown Assignment"
+author: " "
+date: " "
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(openintro)
+```
+
+## Problem One: 
+
+Calculate the average number of study hours per week with and without the pipe-operator.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Challenge: 
+
+Calculate the standard deviation for both variables with and without the pipe operator.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Problem Two: 
+
+Sketch a histogram for the study\_hours variable.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Challenge: 
+
+Sketch a boxplot for each variable.
+
+```{r}
+#INSERT YOUR CODE HERE
+```

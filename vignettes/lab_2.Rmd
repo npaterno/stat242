@@ -1,0 +1,83 @@
+---
+title: "Stat231:Lab2"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+description: >
+  For this lab, we will be looking at calculating summary statistics, such as a five number summary, as well as boxplots.
+vignette: >
+  %\VignetteIndexEntry{Stat231:Lab2}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE
+)
+```
+
+```{r setup}
+library(Stat231)
+library(tidyverse)
+library(openintro)
+```
+
+We will be using the diamonds dataset from the *openintro* package. To view the data either run the code chunk below or type the command into your Console. 
+
+```{r, eval = FALSE}
+View(diamonds)
+```
+
+## Five Number Summary
+
+As you can see, this is a large data set with information on 53,940 individual diamonds! First lets calculate some summary statistics.
+
+```{r}
+summary(diamonds$price)
+```
+The *summary()* function outputs the five number summary, plus the mean, of a numeric variable.
+
+Let's see what happens when we use the *summary()* function on a categorical variable. 
+
+```{r}
+summary(diamonds$color)
+```
+With a categorical variable, *summary()* outputs a frequency distribution!
+
+With such a large data set, it might be useful to have some summary statistics for specific subsets. For example, we might expect diamonds with different clarity to have different prices. The *tidyverse* allows us to group our dataset by a specific variable before calculating summary values. For this, we'll use the *fivenum()* function. For example:
+
+```{r}
+fivenum(diamonds$price)[1]
+```
+Will give the minimum value (1st number of the summary) of the variable. 
+
+```{r}
+diamonds_summary <- diamonds %>% #This will create a new data set called diamonds_summary by taking the diamonds dataset "and then"...
+  group_by(clarity) %>% 
+  summarize(min = fivenum(price)[1],
+            q1 = fivenum(price)[2],
+            med = fivenum(price)[3],
+            q3 = fivenum(price)[4],
+            max = fivenum(price)[5]) 
+```
+
+## Boxplots
+Let's create a few boxplots.
+
+```{r}
+ggplot(data = diamonds, 
+       aes(y = price))+
+  geom_boxplot()
+```
+
+What if we wanted the boxplot for the grouped data?
+
+```{r}
+ggplot(data = diamonds,
+       aes(x = clarity, 
+           y = price))+
+  geom_boxplot()

@@ -1,0 +1,99 @@
+---
+title: "Stat231:Lab3"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+description: >
+  Being able to analyze data is a good quality. Being able to present it in a clear, concise format is even better. In part I of our data viz labs, we will focus expanding the graphs we made in lab 1 to be more clear, concise and have a bit more style. 
+vignette: >
+  %\VignetteIndexEntry{Stat231:Lab3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE
+)
+```
+
+```{r setup}
+library(Stat231)
+library(tidyverse)
+library(openintro)
+library(ggthemes) 
+```
+
+## Quality Data Visualization
+
+Being able to analyze data is a good quality. Being able to present it in a clear, concise format is even better. In part I of our data viz labs, we will focus expanding the graphs we made in lab 1 to be more clear, concise and have a bit more style. 
+
+First, lets draw our original histogram. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram()
+```
+
+Recall, we did make a few adjustments to this in lab 1; we changed the color of the border of the bars as well as their width. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)
+```
+
+It would definitely be helpful to add a title and clean up the labels a bit. Using the 'Help' tab in the Directory pane, look up our dataset, *gpa_study_hours*, and read the description. We'll use this to write our labels. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )
+```
+
+For our next step, we'll add a little flair. We'll use some styles or "themes" from the *ggthemes* package. Use the 'Packages' tab in the Directory pane to look up *ggthemes* and take a look at some of our options. Note: In part II of the lab we will create more custom styles. You can think of part I (this lab) as using a cookie recipe someone else made. We'll eat the cookie, see if we like it, and change what we don't.
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme_solarized()
+```
+
+I like this theme, but the gray bars seem out of place. I'll change the recipe a bit. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(fill = "lightgoldenrod2",
+                 color = "White", 
+                 binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme_solarized()
+```
+
+That looks much better. To change the color of the bars, I added the *fill* argument to the geom_histogram() function. Here is a list of [colors](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).

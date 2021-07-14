@@ -1,0 +1,17 @@
+Package: stat242
+Title: Course Materials for Math/Stat 242
+Version: 0.1.0
+Authors@R:
+    person("Nick", "Paterno", email = "nicholas.paterno@gmail.com", role = c("aut","cre")) 
+Description: Course materials for math/stat 2342 at PLU including lessons and assignments.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 3.2)
+Imports:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

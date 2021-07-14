@@ -1,0 +1,27 @@
+---
+title: 'Inferential Statistics Assignment'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(infer)
+```
+
+## Problem One:
+
+Conduct a hypothesis test to determine if a majority of a randomly chosen congress is Republican. Calculate the confidence interval as well. You'll need to *recode* your data similar to the example in the lesson.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Problem Two:
+
+Determine if there is a difference in money received from pro lobby groups and con lobby groups (test and interval). You'll need to clean the data by replacing missing values with 0 and filtering to a single political party of your choice.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+

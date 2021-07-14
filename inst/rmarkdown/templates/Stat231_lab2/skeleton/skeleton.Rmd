@@ -1,0 +1,46 @@
+---
+title: "Summary Statistics Assignment"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(openintro)
+```
+
+## Problem One:
+Calculate the five-number-summary for the carat variable and frequency distribution of the cut variable. 
+```{r}
+#ENTER YOUR CODE HERE
+```
+
+## Challenge:
+Can you write one or two lines of code and calculate the summary statistics for ALL variables in the dataset?
+
+```{r}
+#ENTER YOUR CODE HERE
+```
+
+## Problem Two:
+Calculate the five number summary for carat when grouped by the different cuts.
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Problem Three: 
+Sketch a boxplot of the carat variable.
+
+```{r}
+#ENTER YOUR CODE HERE
+```
+
+## Problem Four: 
+Sketch a boxplot for the carat of the diamonds when grouped by cut.
+
+```{r}
+#ENTER YOUR CODE HERE
+```

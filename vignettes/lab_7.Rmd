@@ -1,0 +1,124 @@
+---
+title: "Stat231:Lab7"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+description: >
+  Building a basic linear regression model.
+vignette: >
+  %\VignetteIndexEntry{Stat231:Lab7}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Stat231)
+library(tidyverse)
+library(moderndive)
+library(openintro)
+```
+
+## Building a Linear Model
+
+For this lab we will be trying to predict the difference between the starting price and final price (not including shipping) for a Mario Kart game auctioned on ebay. Let's take a look at our dataset. 
+```{r}
+glimpse(mariokart)
+```
+
+We want to predict the difference of the start and final price of the game itself. Looking at the pricing variables given we have *start_Pr* (starting price), *ship_Pr* (shipping price) and *total_Pr* (total price). This means we need to do a bit of work to get the variable we want. Below I'll clean the data - to get rid of unnecessary variables - and add the new variable. 
+
+```{r}
+model_data <- mariokart %>% 
+  select(n_bids, duration ,start_pr, ship_pr, total_pr) %>% #This line selects the variable we might need for our model.
+  mutate(price_diff = total_pr-ship_pr-start_pr) #This line calculates the difference between start and final price for each auction.
+```
+
+## Finding the Correlation Coefficient
+
+Next, we'll use a function from the *moderndive* package to calculate a few linear correlation coefficients and see if there are any relationships worth modeling. 
+
+```{r}
+get_correlation(data = model_data, price_diff ~ duration)
+
+get_correlation(data = model_data, price_diff ~ n_bids)
+```
+
+## Looking for a Better Fit
+
+Based on the correlation values, it would be a better choice to make our prediction based on the number of bids than the duration of the auction. While the correlation value is not spectacular, it is close enough to 1 based on the sample of 143 auctions. Before we build our model let's sketch a scatter plot. 
+
+```{r}
+ggplot(model_data, aes(n_bids, price_diff))+
+  geom_point()
+```
+
+There is definitely a positive linear relationship in this data. There is also a clear outlier. Let's find that data point in the original data set. The auction title reveals that this was for a Wii with Guitar Hero 5 and Mario Kart bundled together. Let's remove this as the price of the console itself is heavily influencing the model. Once removed, we'll build a new model and compare their accuracy via correlation. 
+
+```{r}
+model_data_2 <- model_data %>% 
+  filter(price_diff<300)
+
+get_correlation(data = model_data_2, price_diff ~ n_bids)
+```
+This is a much better correlation. We'll use this dataset to build our model. 
+
+## Building the Linear Model
+
+```{r}
+price_model <- lm(data = model_data_2, price_diff ~ n_bids)
+```
+
+Next we'll overlay the model onto our scatter plot. 
+
+```{r}
+ggplot(model_data_2, aes(n_bids, price_diff))+
+  geom_point()+
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+
+## Analyzing the Model
+
+Now we'll look at a summary of the model. 
+
+```{r}
+get_regression_table(price_model)
+```
+
+The *intercept* row is for the y-intercept of the line. Based on our data, the model shows an intercept of 12.702 and a standard error of 2.725; This leads to a confidence interval of (7.315, 18.090). For this row we aren't concerned about the (test) statistic or p_value. 
+
+The *nBids* row is for the slope of the line. Based on our data, the model shows a slope of 1.737 (meaning the price difference goes up $1.74 per bid) and a standard error of .186; This leads to a confidence interval of (1.370, 2.104). For this row, we are concerned with the (test) statistic and p_value. The null hypothesis would be that the variables are not correlated and the slope is 0. With a test statistic of 4.662 and p_value (close to) 0, we can definitely reject the null hypothesis and support the claim that there is a relationship between these variables with a nonzero slope.
+
+## Making Predictions
+
+Now that our model is built, let's make some predictions. To do this, we'll need to write a function that takes in a model and value and returns a prediction. 
+
+```{r}
+model_prediction <- function(model, value){ #This line defines our function.
+  return(model$coefficients[1]+value*model$coefficients[2]) #This line calculates the prediction by evaluating the linear function at the supplied value and returns the result. 
+}
+```
+
+We'll make two predictions: an interpolation (within the original data cluster) and an extrapolation (a point away from the original data cluster). 
+
+Interpolation: 
+```{r}
+model_prediction(price_model, 15)
+```
+
+Based on our model, an ebay auction for Mario Kart that receive 15 bids will have a $38.76 increase from the starting price to the final price. 
+
+Extrapolation: 
+```{r}
+model_prediction(price_model, 100)
+```
+
+Based on our model, an ebay auction for Mario Kart that receive 100 bids will have a $186.40 increase from the starting price to the final price. 

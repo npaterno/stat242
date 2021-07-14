@@ -1,0 +1,27 @@
+---
+title: "Data Viz Part I Assignment"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(openintro)
+library(ggthemes)
+```
+
+## Problem One:
+Re-create your histogram from lab 1 using a different color for the bars and a theme from the ggthemes package.
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+## Problem Two:
+Re-create one of your boxplots from lab 2 in a similar fashion. 
+
+```{r}
+#INSERT YOUR CODE HERE
+```

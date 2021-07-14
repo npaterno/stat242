@@ -1,0 +1,31 @@
+---
+title: "Basic Modeling Assignment"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(moderndive)
+library(openintro)
+```
+
+
+## Problem One: 
+Choose a dataset from the openintro package and complete a linear model and analysis. You need to calculate or build: 
+
+1. The correlation coefficient
+
+2. A scatterplot without the model overlay
+
+3. The regression table (and use it to determine if a relationship exists)
+
+4. A scatterplot with the model overlay
+
+5. Two predictions (1 interpolation, 1 extrapolation) with interpretations. 
+
+```{r}
+#INSERT YOUR CODE HERE
+```

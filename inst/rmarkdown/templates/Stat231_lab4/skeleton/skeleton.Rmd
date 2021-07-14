@@ -1,0 +1,34 @@
+---
+title: "Data Viz Part II Assignment"
+author: ""
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(openintro)
+```
+
+## Problem One: 
+Create a custom version of your histogram from lab 1 OR one of the variables in the diamonds dataset. It should include one (or more): 
+
+*change to text
+
+*change to panel
+
+*change to plot
+
+*change to histogram/boxplot
+
+```{r}
+#INSERT YOUR CODE HERE
+```
+
+
+## Challenge:
+Repeat problem one using a boxplot for a variable of your choice from either the gpa_study_hours or diamonds dataset.
+```{r}
+#INSERT YOUR CODE HERE
+```

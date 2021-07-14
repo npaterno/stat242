@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+^images$
+readme.txt
+^lessons$
+^doc$
+^Meta$
+LICENSE.md

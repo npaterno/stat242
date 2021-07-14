@@ -1,0 +1,121 @@
+---
+title: "Stat231:Lab4"
+output: 
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
+description: >
+  For this lab, we will once again be adjusting the histogram we made in lab 1. Instead of using a prebuilt theme from the *ggthemes* package, we will be creating our own unique visualizations. 
+vignette: >
+  %\VignetteIndexEntry{Stat231:Lab4}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE
+)
+```
+
+```{r setup}
+library(Stat231)
+library(tidyverse)
+library(openintro)
+```
+
+## Custom Data Visualization
+
+For this lab, we will once again be adjusting the histogram we made in lab 1. Instead of using a prebuilt theme from the *ggthemes* package, we will be creating our own unique visualizations. 
+
+First, lets start with our plot from lab 3 that included labels.  
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )
+```
+
+To customize a ggplot image, we'll add a *theme()* function to the end and change specific parts of the graph. Here is a [full list](https://ggplot2.tidyverse.org/reference/theme.html) of what you can change with the theme() function. It is a substantial list but don't worry, we won't change all of them.
+
+First I'm going to adjust my *text*. I'd prefer to have my title a little larger and in Times New Roman font (which R maps to serif). I'd also like the axis labels to be in italics.
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16,
+                              family = "serif"),
+    axis.title = element_text(face = "italic")
+  )
+```
+
+Next, I'm going to adjust the *panel* the plot is on. I'll change the background and grid colors. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16, #element_text changes any traits of the text
+                              family = "serif"),
+    axis.title = element_text(face = "italic"),
+    panel.background = element_rect(fill = "lightblue"), #element_rect lets us change geometric traits of the panel or plot.
+    panel.grid.major.x = element_blank(), #element_blank will "erase" a feature
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "blue"), #element_line changes any (you guessed it) line traits
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+My next step will be to address the *plot* background (the white space behind the blue). I'd like it to be the same color. I'll also adjust the color and fill of the bars. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(fill = "aquamarine4",
+                 color = "lightblue", 
+                 binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16, #element_text changes any traits of the text
+                              family = "serif"),
+    axis.title = element_text(face = "italic"),
+    panel.background = element_rect(fill = "lightblue"), #element_rect lets us change geometric traits of the panel or plot.
+    panel.grid.major.x = element_blank(), #element_blank will "erase" a feature
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "blue"), #element_line changes any (you guessed it) line traits
+    panel.grid.minor.y = element_blank(),
+    plot.background = element_rect(fill = "lightblue")
+  )
+```
