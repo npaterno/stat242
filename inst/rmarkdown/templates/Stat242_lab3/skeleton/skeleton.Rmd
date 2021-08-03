@@ -1,5 +1,5 @@
 ---
-title: "Basic Modeling Assignment"
+title: "Linear Models"
 author: ""
 date: ""
 output: html_document
@@ -13,7 +13,7 @@ library(openintro)
 ```
 
 
-## Problem One: 
+### Problem One: 
 Choose a dataset from the openintro package and complete a linear model and analysis. You need to calculate or build: 
 
 1. The correlation coefficient

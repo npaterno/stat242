@@ -1,5 +1,5 @@
 ---
-title: "Data Viz Part I Assignment"
+title: "Data Visualization"
 author: ""
 date: ""
 output: html_document
@@ -12,15 +12,23 @@ library(openintro)
 library(ggthemes)
 ```
 
-## Problem One:
+### Problem One:
 Re-create your histogram from lab 1 using a different color for the bars and a theme from the ggthemes package.
 
 ```{r}
 #INSERT YOUR CODE HERE
 ```
 
-## Problem Two:
-Re-create one of your boxplots from lab 2 in a similar fashion. 
+### Problem Two: 
+Create a custom histogram using one of the variables in the `diamonds` data set. It should include one (or more): 
+
+*change to text
+
+*change to panel
+
+*change to plot
+
+*change to histogram/boxplot
 
 ```{r}
 #INSERT YOUR CODE HERE
