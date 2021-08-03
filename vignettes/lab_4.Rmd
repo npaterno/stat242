@@ -1,13 +1,13 @@
 ---
-title: "Stat231:Lab4"
+title: "Stat242:Lab4"
 output: 
   rmarkdown::html_document:
     toc: true
     toc_float: true
 description: >
-  For this lab, we will once again be adjusting the histogram we made in lab 1. Instead of using a prebuilt theme from the *ggthemes* package, we will be creating our own unique visualizations. 
+  Making Claims about a Population Based on Sample Data.
 vignette: >
-  %\VignetteIndexEntry{Stat231:Lab4}
+  %\VignetteIndexEntry{Stat242:Lab4}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,106 +16,74 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo = TRUE
+  echo = TRUE,
+  warning = FALSE
 )
 ```
 
-```{r setup}
-library(Stat231)
+```{r setup, include = FALSE}
+library(Stat242)
 library(tidyverse)
-library(openintro)
+library(infer)
 ```
 
-## Custom Data Visualization
+## Making Claims about a Population Based on Sample Data
 
-For this lab, we will once again be adjusting the histogram we made in lab 1. Instead of using a prebuilt theme from the *ggthemes* package, we will be creating our own unique visualizations. 
+As we've seen in chapter 19, we can calculate confidence intervals and conduct hypothesis test to make claims about means in our population but based on our sample. In this lab, we'll build an interval and conduct a hypothesis test for a two-sample average and for many samples (chapter 22). 
 
-First, lets start with our plot from lab 3 that included labels.  
+For the first part, we'll be using the `piracy` data set included in  our `Stat242` package. It contains data for each member of congress and money they received from lobby groups for (money_pro) and against (money_con) anti-piracy legislation. 
+
+## Means
+
+For our means section Our test/interval will be to determine if there is a difference in money received by Democrats and Republicans, regardless of which lobby group the money came from.  
+
+To clean our data, we'll need to replace missing values with 0 (rationale discussed in lab/the screencast), create a new variable for the sum of money received and filter our the few Independent party observations. 
 
 ```{r}
-ggplot(data = gpa_study_hours, 
-       aes(x = gpa))+
-  geom_histogram(color = "White", binwidth = 0.25)+
-  labs( #the labs() function allows us to add labels to our graph
-    title = "Distribution of Grade Point Average",
-    subtitle = "For 193 Introductory Statistics Students",
-    x = "GPA",
-    y = "Number of Students",
-    caption = "Source: Private US University, 2012"
-  )
+summary_data <- Stat242::piracy %>% 
+  mutate(money_pro = replace_na(money_pro, 0), 
+         money_con = replace_na(money_con,0),
+         money_total = money_pro+money_con) %>% 
+  select(-c(money_pro, money_con)) %>%  
+  filter(party!= "I")
 ```
 
-To customize a ggplot image, we'll add a *theme()* function to the end and change specific parts of the graph. Here is a [full list](https://ggplot2.tidyverse.org/reference/theme.html) of what you can change with the theme() function. It is a substantial list but don't worry, we won't change all of them.
-
-First I'm going to adjust my *text*. I'd prefer to have my title a little larger and in Times New Roman font (which R maps to serif). I'd also like the axis labels to be in italics.
+Now we're ready to run our test.
 
 ```{r}
-ggplot(data = gpa_study_hours, 
-       aes(x = gpa))+
-  geom_histogram(color = "White", binwidth = 0.25)+
-  labs( #the labs() function allows us to add labels to our graph
-    title = "Distribution of Grade Point Average",
-    subtitle = "For 193 Introductory Statistics Students",
-    x = "GPA",
-    y = "Number of Students",
-    caption = "Source: Private US University, 2012"
-  )+
-  theme(
-    title = element_text(size = 16,
-                              family = "serif"),
-    axis.title = element_text(face = "italic")
-  )
+t_test(summary_data, #choose the data frame
+       formula = money_total~party, #define the relationship/variables for testing
+       order = c("D","R"), #choose an order for the mean difference to be calculated
+       mu = 0, #define the null hypothesis
+       alternative = "two.sided", #define the alternative hypothesis
+       var.equal = TRUE, #assume the populations have equal variance
+       conf_int = TRUE, #will calculate a confidence interval for the mean difference as part of the test
+       conf_level = 0.99) #defines the confidence/significance level
 ```
 
-Next, I'm going to adjust the *panel* the plot is on. I'll change the background and grid colors. 
+From the output, we can conclude there is a difference. Based on the interval is appears that Democrats received more money in relation to the anti-piracy legislation.
+
+## ANOVA
+
+The analysis of variance - anova - test is equivalent to the chi-squared test but for numeric data instead of categorical data; It will compare the means of three or more samples. 
+
+We will be going back to the diamonds data set and running an anova test to see if there is a difference in the average price of diamonds based on clarity. We will nest the test inside a `summary()` function to get the test and print out of results in one line. 
+
 
 ```{r}
-ggplot(data = gpa_study_hours, 
-       aes(x = gpa))+
-  geom_histogram(color = "White", binwidth = 0.25)+
-  labs( #the labs() function allows us to add labels to our graph
-    title = "Distribution of Grade Point Average",
-    subtitle = "For 193 Introductory Statistics Students",
-    x = "GPA",
-    y = "Number of Students",
-    caption = "Source: Private US University, 2012"
-  )+
-  theme(
-    title = element_text(size = 16, #element_text changes any traits of the text
-                              family = "serif"),
-    axis.title = element_text(face = "italic"),
-    panel.background = element_rect(fill = "lightblue"), #element_rect lets us change geometric traits of the panel or plot.
-    panel.grid.major.x = element_blank(), #element_blank will "erase" a feature
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.y = element_line(color = "blue"), #element_line changes any (you guessed it) line traits
-    panel.grid.minor.y = element_blank()
-  )
+summary(aov(price ~ clarity, data = diamonds))
 ```
 
-My next step will be to address the *plot* background (the white space behind the blue). I'd like it to be the same color. I'll also adjust the color and fill of the bars. 
+The important parts of this print out are the $F$ value and $Pr(>F)$. The $F$ value is similar to a $z$ or $t$ score. The $Pr(>F)$ is a p-value. 
+
+Using the p-value method, $<2e-16$ means the p-value is less than $0.0000000000000002$. Using any of the typical values for alpha, we would reject our null hypothesis and can say there is a difference in the average price of diamonds based on their clarity rating.
+
+Using the classic method, we need to calculate a critical F value. 
 
 ```{r}
-ggplot(data = gpa_study_hours, 
-       aes(x = gpa))+
-  geom_histogram(fill = "aquamarine4",
-                 color = "lightblue", 
-                 binwidth = 0.25)+
-  labs( #the labs() function allows us to add labels to our graph
-    title = "Distribution of Grade Point Average",
-    subtitle = "For 193 Introductory Statistics Students",
-    x = "GPA",
-    y = "Number of Students",
-    caption = "Source: Private US University, 2012"
-  )+
-  theme(
-    title = element_text(size = 16, #element_text changes any traits of the text
-                              family = "serif"),
-    axis.title = element_text(face = "italic"),
-    panel.background = element_rect(fill = "lightblue"), #element_rect lets us change geometric traits of the panel or plot.
-    panel.grid.major.x = element_blank(), #element_blank will "erase" a feature
-    panel.grid.minor.x = element_blank(),
-    panel.grid.major.y = element_line(color = "blue"), #element_line changes any (you guessed it) line traits
-    panel.grid.minor.y = element_blank(),
-    plot.background = element_rect(fill = "lightblue")
-  )
+qf(0.95, #1-alpha
+   df1 = 7,
+   df2 = 53932)
 ```
+
+This means our critical region starts at approximately $F = 2$, and our test statistic is $F = 215$. We are well into the critical region and again conclude that there is a difference in the average price of diamonds based on their clarity. 

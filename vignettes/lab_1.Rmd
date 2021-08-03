@@ -1,13 +1,13 @@
 ---
-title: "Stat231:Lab1"
+title: "Stat242:Lab1"
 description: >
-  The goal of this lab is to compile your first R   Markdown document and get a sneak peak of what we'll be doing in lab the next two weeks.
+  The goal of this lab is to compile your first R Markdown document and get a sneak peak of what we'll be doing in a future lab.
 output: 
   rmarkdown::html_document:
     toc: true
     toc_float: true
 vignette: >
-  %\VignetteIndexEntry{Stat231:Lab1}
+  %\VignetteIndexEntry{Stat242:Lab1}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,33 +21,39 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(Stat231)
+library(Stat242)
 library(openintro)
 library(tidyverse)
 ```
 
 ## Summmary Statistics
-We are going to use the gpa_study_hours data set from the openintro package. Before we view the dataset lets open the help file in the Directory pane. Click the 'Help' tab and search for 'gpa_study_hours'. Let's view the dataset. You can choose to either run the code chunk below or type the command into your Console. 
+We are going to use the `gpa_study_hours` data set from the `openintro` package. Before we view the data set lets open the help file in the Directory pane. Click the 'Help' tab and search for 'gpa_study_hours'. Let's view the data set. You can choose to either run the code chunk below or type the command into your Console. 
 
 ```{r, eval = FALSE}
 View(gpa_study_hours)
 ```
 
-Below is a code and output for the calculating the average gpa.
+Below is a code and output for the calculating the average gpa, first in base R followed by Tidyverse below. There are two methods for doing so with base R: with and without a pipe operator. We'll refer to the base R pipe as the native pipe.
+
 ```{r}
+# Base R syntax
 mean(gpa_study_hours$gpa)
-```
-mean() is a function in R that will calculate the average of a numeric variable. The syntax for the argument outside of a pipe (explained below) is dataset$variable. Inside of a pipe only the variable is needed. 
 
-The pipe-operator, %>% , is a key part of Tidyverse syntax. It tells us to take whatever is on the left side of the argument "and then" perform the next line of code. To calculate the average gpa using the pipe-operator:
+# Native pipe syntax
+gpa_study_hours$gpa |> mean()
+```
+mean() is a function in R that will calculate the average of a numeric variable. The syntax for the argument is dataset$variable. Using the native pipe, we simply need to id the function.
+
+The Tidyverse pipe-operator, `%>%` , comes from the `magrittr` package. It is a key part of Tidyverse syntax. It tells us to take whatever is on the left side of the argument "and then" perform the next line of code. The differnce between this pipe and the native pipe is that the native pipe can only pipe data into the *first* argument of a function. We'll cover this difference more in depth in a later lab.
 
 ```{r}
+# Tidyverse Syntax
 gpa_study_hours %>% 
   summarize(mean(gpa))
 ```
 This above chunk of code tells us to take the gpa_study_hours data set "and then" summarize the data by calculating the mean of the gpa variable. 
 
-The two methods we just used - without and with the pipe-operator - are considered Base R and Tidyverse syntax, respectively. Both methods are equally valid. For the remainder of our labs we will primarily use Tidyverse syntax as it is a bit more fluid.
+For the remainder of our labs we will primarily use Tidyverse syntax as it is a bit more fluid.
 
 ## Histograms
 
@@ -59,7 +65,7 @@ ggplot(data = gpa_study_hours,
   geom_histogram()
 ```
 
-ggplot is a part of the Tidyverse package. It stands for Grammar of Graphics Plot. It contains a vast array of tools that can be used for data visualization. The geom_* is a Geometry that we want to graph. In this case a histogram. We'll delve deeper into these in lab #3. Notice how its hard to tell where some of the bars should be split as well as what the class width is (see the note that popped up above the chart). We can define those explicitly in our geom. 
+`ggplot` is a function from the `ggplot2` package which is a part of the Tidyverse. It stands for Grammar of Graphics Plot. It contains a vast array of tools that can be used for data visualization. The `geom_*` is a Geometry that we want to graph. In this case a histogram. We'll delve deeper into these in lab #3. Notice how its hard to tell where some of the bars should be split as well as what the class width is (see the note that popped up above the chart). We can define those explicitly in our geom. 
 
 ```{r}
 ggplot(data = gpa_study_hours, 

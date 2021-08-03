@@ -1,13 +1,13 @@
 ---
-title: "Stat231:Lab2"
+title: "Stat242:Lab2"
 output: 
   rmarkdown::html_document:
     toc: true
     toc_float: true
 description: >
-  For this lab, we will be looking at calculating summary statistics, such as a five number summary, as well as boxplots.
+  Being able to analyze data is a good quality. Being able to present it in a clear, concise format is even better. First, we will focus expanding the graphs we made in lab 1 to be more clear, concise and have a bit more style. We'll finish learning how to create unique/custom styling.
 vignette: >
-  %\VignetteIndexEntry{Stat231:Lab2}
+  %\VignetteIndexEntry{Stat242:Lab2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -20,64 +20,159 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include = FALSE}
 library(Stat231)
 library(tidyverse)
 library(openintro)
+library(ggthemes) 
 ```
 
-We will be using the diamonds dataset from the *openintro* package. To view the data either run the code chunk below or type the command into your Console. 
+## Quality Data Visualization
 
-```{r, eval = FALSE}
-View(diamonds)
-```
+Being able to analyze data is a good quality. Being able to present it in a clear, concise format is even better. In part I of our data viz labs, we will focus expanding the graphs we made in lab 1 to be more clear, concise and have a bit more style. 
 
-## Five Number Summary
-
-As you can see, this is a large data set with information on 53,940 individual diamonds! First lets calculate some summary statistics.
+First, lets draw our original histogram. 
 
 ```{r}
-summary(diamonds$price)
-```
-The *summary()* function outputs the five number summary, plus the mean, of a numeric variable.
-
-Let's see what happens when we use the *summary()* function on a categorical variable. 
-
-```{r}
-summary(diamonds$color)
-```
-With a categorical variable, *summary()* outputs a frequency distribution!
-
-With such a large data set, it might be useful to have some summary statistics for specific subsets. For example, we might expect diamonds with different clarity to have different prices. The *tidyverse* allows us to group our dataset by a specific variable before calculating summary values. For this, we'll use the *fivenum()* function. For example:
-
-```{r}
-fivenum(diamonds$price)[1]
-```
-Will give the minimum value (1st number of the summary) of the variable. 
-
-```{r}
-diamonds_summary <- diamonds %>% #This will create a new data set called diamonds_summary by taking the diamonds dataset "and then"...
-  group_by(clarity) %>% 
-  summarize(min = fivenum(price)[1],
-            q1 = fivenum(price)[2],
-            med = fivenum(price)[3],
-            q3 = fivenum(price)[4],
-            max = fivenum(price)[5]) 
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram()
 ```
 
-## Boxplots
-Let's create a few boxplots.
+Recall, we did make a few adjustments to this in lab 1; we changed the color of the border of the bars as well as their width. 
 
 ```{r}
-ggplot(data = diamonds, 
-       aes(y = price))+
-  geom_boxplot()
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)
 ```
 
-What if we wanted the boxplot for the grouped data?
+It would definitely be helpful to add a title and clean up the labels a bit. Using the 'Help' tab in the Directory pane, look up our data set, `gpa_study_hours`, and read the description. We'll use this to write our labels. 
 
 ```{r}
-ggplot(data = diamonds,
-       aes(x = clarity, 
-           y = price))+
-  geom_boxplot()
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs( #the labs() function allows us to add labels to our graph
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )
+```
+
+For our next step, we'll add a little flair. We'll use some styles or "themes" from the `ggthemes` package. Use the 'Packages' tab in the Directory pane to look up `ggthemes` and take a look at some of our options. Note: In part II of the lab we will create more custom styles. You can think of part I (this lab) as using a cookie recipe someone else made. We'll eat the cookie, see if we like it, and change what we don't in the next lab.
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs(
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme_solarized()
+```
+
+I like this theme, but the gray bars seem out of place. I'll change the recipe a bit. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(fill = "lightgoldenrod2",
+                 color = "White", 
+                 binwidth = 0.25)+
+  labs(
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme_solarized()
+```
+
+That looks much better. To change the color of the bars, I added the `fill` argument to the geom_histogram() function. Here is a list of [colors](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
+
+## Custom Data Visualization
+
+For this part of lab, we will reset to the plot above that just had labels. Then instead of using a prebuilt theme from the `ggthemes` package, we will be creating our own unique visualizations.  
+
+To customize a ggplot image, we'll add a `theme()` function to the end and change specific parts of the graph. Here is a [full list](https://ggplot2.tidyverse.org/reference/theme.html) of what you can change with the `theme()` function. It is a substantial list but don't worry, we won't change all of them.
+
+First I'm going to adjust my *text*. I'd prefer to have my title a little larger and in Times New Roman font (which R maps to serif). I'd also like the axis labels to be in italics.
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs(
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16,
+                              family = "serif"),
+    axis.title = element_text(face = "italic")
+  )
+```
+
+Next, I'm going to adjust the *panel* the plot is on. I'll change the background color and the grid. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(color = "White", binwidth = 0.25)+
+  labs(
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16,
+                         family = "serif"),
+    axis.title = element_text(face = "italic"),
+    panel.background = element_rect(fill = "lightblue"), 
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "blue"), 
+    panel.grid.minor.y = element_blank()
+  )
+```
+
+My next step will be to address the *plot* background (the white space behind the blue). I'd like it to be the same color. I'll also adjust the color and fill of the bars. 
+
+```{r}
+ggplot(data = gpa_study_hours, 
+       aes(x = gpa))+
+  geom_histogram(fill = "aquamarine4",
+                 color = "lightblue", 
+                 binwidth = 0.25)+
+  labs(
+    title = "Distribution of Grade Point Average",
+    subtitle = "For 193 Introductory Statistics Students",
+    x = "GPA",
+    y = "Number of Students",
+    caption = "Source: Private US University, 2012"
+  )+
+  theme(
+    title = element_text(size = 16,
+                         family = "serif"),
+    axis.title = element_text(face = "italic"),
+    panel.background = element_rect(fill = "lightblue"), 
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(color = "blue"),
+    panel.grid.minor.y = element_blank(),
+    plot.background = element_rect(fill = "lightblue")
+  )
+```
