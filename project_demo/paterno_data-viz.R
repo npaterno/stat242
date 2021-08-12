@@ -63,17 +63,3 @@ ggplot(project_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
 
 ggplot(project_data, aes(lifeExp, reorder(continent, lifeExp)))+
   geom_boxplot(outlier.alpha = 0.5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

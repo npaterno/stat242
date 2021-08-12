@@ -92,8 +92,3 @@ ggplot(europe_2, aes(gdpPercap, lifeExp, size = pop/10^6))+
   )+
   theme_economist()+ # from ggthemes
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
-
-
-
-
-

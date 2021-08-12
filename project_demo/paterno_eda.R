@@ -54,14 +54,3 @@ pop_stats <- project_data %>%
   group_by(country) %>% 
   summarize(pop_mean = mean(pop),
             pop_sd = sd(pop))
-
-
-
-
-
-
-
-
-
-
-
