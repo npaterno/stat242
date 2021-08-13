@@ -13,5 +13,11 @@ Depends:
     R (>= 3.2)
 Imports:
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggplot2,
+    ggthemes,
+    infer, 
+    moderndive,
+    openintro,
+    tidyverse
 VignetteBuilder: knitr
