@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include = FALSE}
-library(Stat242)
+library(stat242)
 library(tidyverse)
 library(moderndive)
 library(openintro)

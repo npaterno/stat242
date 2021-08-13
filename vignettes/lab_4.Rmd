@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, include = FALSE}
-library(Stat242)
+library(stat242)
 library(tidyverse)
 library(infer)
 ```
@@ -40,7 +40,7 @@ For our means section Our test/interval will be to determine if there is a diffe
 To clean our data, we'll need to replace missing values with 0 (rationale discussed in lab/the screencast), create a new variable for the sum of money received and filter our the few Independent party observations. 
 
 ```{r}
-summary_data <- Stat242::piracy %>% 
+summary_data <- stat242::piracy %>% 
   mutate(money_pro = replace_na(money_pro, 0), 
          money_con = replace_na(money_con,0),
          money_total = money_pro+money_con) %>% 
