@@ -5,7 +5,7 @@
 \alias{project_data}
 \title{Project Data.}
 \format{
-A data frame with 8560 rows and 8 variables.
+A data frame with 8840 rows and 8 variables.
 \describe{
 \item{country}{Name of the country.}
 \item{continent}{Name of the continent the country is on.}

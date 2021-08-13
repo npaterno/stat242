@@ -109,18 +109,12 @@ non_net_mid <- non_net_users_num %>%
 clean_net_use <- net_mid %>% 
   full_join(non_net_mid)
 
-### Filter gapminder data from package to include only country and continent
-continent_code <- gapminder::gapminder %>% 
-  select(country, continent) %>% 
-  distinct()
-
 ### Join Data ###
-
-project_data <- continent_code %>% 
-  right_join(clean_life_exp, by = "country") %>% 
+project_data <- clean_cell %>% 
+  left_join(clean_life_exp, by = c("country", "year")) %>% 
   left_join(clean_net_use, by = c("country", "year")) %>% 
-  right_join(clean_population, by = c("country", "year")) %>% 
-  right_join(clean_cell, by = c("country", "year"))
+  left_join(clean_population, by = c("country", "year")) %>% 
+  left_join(continents, by = "country")
 
 # Save Data -----------------------------------------------------------------------------
 usethis::use_data(project_data, overwrite = TRUE)

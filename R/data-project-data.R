@@ -2,7 +2,7 @@
 #' 
 #' A data set compiled from multiple data sets available at gapminder.org/data. 
 #'
-#' @format A data frame with 8560 rows and 8 variables.
+#' @format A data frame with 8840 rows and 8 variables.
 #' \describe{
 #'   \item{country}{Name of the country.}
 #'   \item{continent}{Name of the continent the country is on.}
