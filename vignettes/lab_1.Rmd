@@ -44,7 +44,7 @@ gpa_study_hours$gpa |> mean()
 ```
 mean() is a function in R that will calculate the average of a numeric variable. The syntax for the argument is dataset$variable. Using the native pipe, we simply need to id the function.
 
-The Tidyverse pipe-operator, `%>%` , comes from the `magrittr` package. It is a key part of Tidyverse syntax. It tells us to take whatever is on the left side of the argument "and then" perform the next line of code. The differnce between this pipe and the native pipe is that the native pipe can only pipe data into the *first* argument of a function. We'll cover this difference more in depth in a later lab.
+The Tidyverse pipe-operator, `%>%` , comes from the `magrittr` package. It is a key part of Tidyverse syntax. It tells us to take whatever is on the left side of the argument "and then" perform the next line of code. The difference between this pipe and the native pipe is that the native pipe can only pipe data into the *first* argument of a function. We'll cover this difference more in depth in a later lab.
 
 ```{r}
 # Tidyverse Syntax
