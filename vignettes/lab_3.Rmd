@@ -99,7 +99,7 @@ The *nBids* row is for the slope of the line. Based on our data, the model shows
 
 ## Making Predictions
 
-Now that our model is built, let's make some predictions. To do this, we'll use the `linear_model_prediction` function from our `Stat231` package.
+Now that our model is built, let's make some predictions. To do this, we'll use the `linear_model_prediction` function from our `stat242` package.
 
 We'll make two predictions: an interpolation (within the original data cluster) and an extrapolation (a point away from the original data cluster). 
 
