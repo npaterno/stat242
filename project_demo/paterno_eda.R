@@ -39,6 +39,7 @@ gdp_summary <- project_data %>%
   mutate(name = c("min", "q1", "med", "q3", "max")) %>% 
   pivot_wider(names_from = name, 
               values_from = five_num)
+
 ## Calculate the five number summary for gdp globally across all years
 global_gdp_summmary <- project_data %>% 
   summarize(five_num = fivenum(gdpPercap))
