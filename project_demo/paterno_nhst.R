@@ -33,7 +33,7 @@ pnorm(test_stat, lower.tail = TRUE)
 # greater than the proportion of the rest of the globe? Here, we'll consider
 # the other continents as one group and conduct a two-sample test. 
 
-cat_test_data <- project_data %>% 
+cat_test_data <- raw_data %>% 
   mutate(is_greater_60 = 
            case_when(
              lifeExp > 60 ~ 1,

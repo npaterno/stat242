@@ -13,39 +13,39 @@ source(here::here("project_demo/paterno_eda.R"))
 # Histograms --------------------------------------------------------------
 
 ## Histogram for life expectancy with no grouping
-ggplot(project_data, aes(lifeExp)) +
+ggplot(raw_data, aes(lifeExp)) +
   geom_histogram()
 
 ## Grouping by continent via color
-ggplot(project_data, aes(lifeExp, fill = continent)) +
+ggplot(raw_data, aes(lifeExp, fill = continent)) +
   geom_histogram(position = "dodge")
 
 ## Grouping by continent via facets
-ggplot(project_data, aes(lifeExp, fill = as.factor(year))) +
+ggplot(raw_data, aes(lifeExp, fill = as.factor(year))) +
   geom_histogram()+
   facet_wrap(~continent)
 
 # Scatter plots -----------------------------------------------------------
 
 ## Population v Year
-ggplot(project_data, aes(year, pop))+
+ggplot(raw_data, aes(year, pop))+
   geom_point()
 
 ## Life Expectancy v Year
-ggplot(project_data, aes(year, lifeExp))+
+ggplot(raw_data, aes(year, lifeExp))+
   geom_point()
 
 ## Life Expectancy v Pop
-ggplot(project_data, aes(pop, lifeExp))+
+ggplot(raw_data, aes(pop, lifeExp))+
   geom_point()
 
 ## Life Expectancy v GDP
-ggplot(project_data, aes(gdpPercap, lifeExp, color = continent))+
+ggplot(raw_data, aes(gdpPercap, lifeExp, color = continent))+
   geom_point()+
   facet_wrap(~continent)
 
 ## Presentation plot (not required for individual files but required for group file)
-ggplot(project_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
+ggplot(raw_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
   geom_point(alpha = 0.2)+
   facet_wrap(~continent)+
   labs(
@@ -61,5 +61,5 @@ ggplot(project_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
 
 # Box plot ----------------------------------------------------------------
 
-ggplot(project_data, aes(lifeExp, reorder(continent, lifeExp)))+
+ggplot(raw_data, aes(lifeExp, reorder(continent, lifeExp)))+
   geom_boxplot(outlier.alpha = 0.5)

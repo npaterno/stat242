@@ -9,7 +9,7 @@ source(here::here("project_demo/paterno_data-viz.R"))
 
 # Check correlation ----------------------------------------------------------
 
-get_correlation(data = project_data %>% group_by(continent), 
+get_correlation(data = raw_data %>% group_by(continent), 
                 formula = lifeExp ~ gdpPercap)
 
 # Given the sample sizes (count from the continents data) all of these are 
@@ -21,7 +21,7 @@ get_correlation(data = project_data %>% group_by(continent),
 # I'll focus on Europe (you can focus on one continent/country as well) since
 # it had a high correlation value and relatively large sample size 
 
-europe <- project_data %>% 
+europe <- raw_data %>% 
   filter(continent == "Europe")
 
 life_gdp_mod <- lm(formula = lifeExp ~ gdpPercap, 
