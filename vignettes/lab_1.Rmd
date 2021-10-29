@@ -38,7 +38,9 @@ Below is a code and output for the calculating the average gpa, first in base R 
 ```{r}
 # Base R syntax
 mean(gpa_study_hours$gpa)
+```
 
+```{r eval=FALSE}
 # Native pipe syntax
 gpa_study_hours$gpa |> mean()
 ```
