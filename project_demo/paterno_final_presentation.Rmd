@@ -1,0 +1,244 @@
+---
+title: "Life Expectancy and GDP per Capita in Europe"
+subtitle: "Math/Stat 242 Final"
+author: "N. Paterno"
+institute: "Pacific Lutheran University"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    css: plu.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    includes:
+      after_body: insert-logo.html
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+# Load Packages
+library(gapminder)
+library(openintro)
+library(ggthemes)
+library(dplyr)
+library(stat242)
+library(moderndive)
+library(infer)
+library(ggplot2)
+library(tidyr)
+library(kableExtra)
+
+# Load data 
+raw_data <- gapminder
+```
+
+## The Data Set: `gapminder`
+
+### Variables:
+
+* `country`
+
+--
+
+* `continent`
+
+--
+
+* `year`
+
+--
+
+* `lifeExp`
+
+--
+
+* `pop`
+
+--
+
+* `gdpPercap`
+
+---
+
+## Exploratory analysis: 
+### `gdpPercap`
+
+```{r, fig.width=10,fig.height=6}
+ggplot(raw_data, aes(gdpPercap, continent))+
+  geom_boxplot(color = IMSCOL["blue", "full"])+
+  theme_minimal()+
+  stat_summary(fun = mean, geom = "point", col = IMSCOL["red", "full"])+
+  stat_summary(fun = mean, geom = "text", col = IMSCOL["red", "full"],
+               position = position_nudge(x = 5000, y = 0.5), 
+               aes(label = paste("Mean: ", round(..x.., digits = 2))))+
+  labs(
+    title = "GDP per Capita", 
+    subtitle = "by continent, 1952 - 2007", 
+    x = "GDP per Capita",
+    y = "Continent", 
+    caption = "Source: Gapminder"
+  )
+```
+
+---
+
+## Exploratory analysis:
+### `lifeExp`
+
+```{r, fig.width=10,fig.height=6}
+ggplot(raw_data, aes(lifeExp, continent))+
+  geom_boxplot(color = IMSCOL["blue", "full"])+
+  theme_minimal()+
+  stat_summary(fun = mean, geom = "point", col = IMSCOL["red", "full"])+
+  stat_summary(fun = mean, geom = "text", col = IMSCOL["red", "full"], 
+               position = position_nudge(x = 0, y = 0.5), 
+               aes(label = paste("Mean: ", round(..x.., digits = 2))))+
+  labs(
+    title = "Life Expectancy", 
+    subtitle = "by continent, 1952 - 2007", 
+    x = "Life Expectancy",
+    y = "Continent", 
+    caption = "Source: Gapminder"
+  )
+```
+
+---
+
+## Modeling the data: 
+Question: Can we predict life expectancy from GDP per capita? 
+
+--
+
+```{r, fig.width=10,fig.height=6}
+ggplot(raw_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
+  geom_point(alpha = 0.2, color = IMSCOL["blue", "full"])+
+  facet_wrap(~continent, nrow = 1)+
+  labs(
+    title = "Life Expectancy v. GDP per Capita by Continent",
+    subtitle = "1952 - 2007",
+    size = "Population (millions)",
+    x = "GDP per Capita",
+    y = "Life Expectancy",
+    caption = "Source: Gapminder"
+  )+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+---
+
+## Modeling the data:
+### Correlation by continent
+```{r}
+get_correlation(data = raw_data %>% group_by(continent), 
+                formula = lifeExp ~ gdpPercap) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+---
+
+## Modeling the data: 
+
+Is there a *tipping point* in Europe and the Americas?
+
+```{r, fig.width=10,fig.height=6}
+ggplot(raw_data %>% filter(continent == "Europe" | continent == "Americas"), aes(gdpPercap, lifeExp, color = factor(year)))+
+  facet_wrap(~continent)+
+  geom_point(alpha = 0.5)+
+  geom_vline(xintercept = 5000, color = IMSCOL["red" , "full"])+
+  scale_color_viridis_d()+
+  labs(
+    title = "Life expectancy v GDP per capita",
+    subtitle = "1952 - 2007",
+    color = "Year",
+    x = "GDP per Capita",
+    y = "Life Expectancy")+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+---
+
+## Modeling the data: 
+### Focusing on Europe
+
+```{r, fig.width=10,fig.height=6}
+europe <- raw_data %>% 
+  filter(continent == "Europe") 
+
+ggplot(raw_data %>% filter(continent == "Europe"), aes(gdpPercap, lifeExp))+
+  geom_point(alpha = 0.5, color = IMSCOL["blue", "full"])+
+  geom_smooth(method = "lm", se = FALSE, color = IMSCOL["red" , "full"])+
+  labs(
+    title = "Life expectancy v GDP per capita",
+    subtitle = "1952 - 2007",
+    x = "GDP per Capita",
+    y = "Life Expectancy")+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+life_gdp_mod <- lm(formula = lifeExp ~ gdpPercap, 
+                   data = europe)
+
+pred <- linear_model_prediction(life_gdp_mod,52456)
+pred_2 <- linear_model_prediction(life_gdp_mod,40299)
+
+```
+
+---
+
+## Inferential statistics:
+### Hypothesis testing
+
+#### GDP per capita test: 
+
+Would a GDP per capita below $5000 be unusual in Europe? 
+
+--
+
+#### Life Expectancy test: 
+
+Would the corresponding predicted life expectancy be unusually low for a European country? 
+
+--
+
+```{r}
+pred_3 <- linear_model_prediction(life_gdp_mod, 5000)
+
+total <- europe %>% 
+  summarize(count = n())
+
+t_gdp <- (5000-mean(europe$gdpPercap))/(sd(europe$gdpPercap))
+t_gdp_tbl <- tibble(p_value = pt(t_gdp, total$count-1, lower.tail = TRUE), 
+                    stat = "GDP per capita")
+
+t_life <- (pred_3-mean(europe$lifeExp))/(sd(europe$lifeExp))
+t_life_tbl <- tibble(p_value = pt(t_life, total$count-1, lower.tail = TRUE),
+                     stat = "Life Expectancy")
+
+full_join(t_gdp_tbl, t_life_tbl) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+---
+
+## Conclusion:
+
+* Average life expectancy in Europe is higher 
+
+--
+
+* Life expectancy is closely correlated to GDP per capita
+
+---
+
+# Questions?
+
+<img style="border-radius: 50%;" alt="Cartoon image of Porky Pig saying 'that's all, folks!' " src="https://i1.sndcdn.com/artworks-000605731930-1ql21b-t500x500.jpg" width="500px"/>
