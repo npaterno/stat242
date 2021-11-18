@@ -46,7 +46,7 @@ ggplot(europe, aes(gdpPercap, lifeExp, size = pop/10^6))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 # Since the size of the points is the population, its reasonable to 
-# guess that the aparent outliers are the same country. Let's check
+# guess that the apparent outliers are the same country. Let's check
 # with a facet wrap by year.
 ggplot(europe, aes(gdpPercap, lifeExp, size = pop/10^6))+
   geom_point(alpha = 0.2)+

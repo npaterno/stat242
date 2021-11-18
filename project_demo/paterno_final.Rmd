@@ -1,0 +1,256 @@
+---
+title: "Life Expectancy and GDP per Capita in Europe"
+author: "N.Paterno"
+date: "11/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+# Load Packages
+library(gapminder)
+library(openintro)
+library(ggthemes)
+library(dplyr)
+library(stat242)
+library(moderndive)
+library(infer)
+library(ggplot2)
+library(tidyr)
+library(kableExtra)
+
+# Load data 
+raw_data <- gapminder
+```
+
+## Exploratory Data Analysis \& Data Visualization
+
+We begin our study of the `gapminder` data with some exploratory data analysis. This particular data set has 1704 rows and 6 columns. The variables are `country`, `continent`, `year`, `lifeExp`, `pop` and `gdpPercap`. The first few are fairly self-explanatory as to what they represent. For the others, `lifeExp` is the life expectancy of someone born in that country during that specific year, `pop` is the population of the country in the given year and `gdpPercap` is the Gross Domestic Product (GDP) per capita for the given year.
+
+The analysis shows that there are 142 countries represented and each country is listed 12 times. Data was collected in 5 year increments starting in 1952 and ending in 2007. For the continents, Africa has the highest representation with 52 countries represented. 
+
+```{r}
+raw_data %>% 
+  group_by(continent) %>% 
+  summarize(count = n()/12) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+Summaries of `gdpPercap` and `lifeExp` for each continent show about what we expect with the lowest values coming from Africa. 
+
+```{r}
+ggplot(raw_data, aes(gdpPercap, continent))+
+  geom_boxplot(color = IMSCOL["blue", "full"])+
+  theme_minimal()+
+  stat_summary(fun = mean, geom = "point", col = IMSCOL["red", "full"])+
+  stat_summary(fun = mean, geom = "text", col = IMSCOL["red", "full"],
+               position = position_nudge(x = 5000, y = 0.5), 
+               aes(label = paste("Mean: ", round(..x.., digits = 2))))+
+  labs(
+    title = "GDP per Capita", 
+    subtitle = "by continent, 1952 - 2007", 
+    x = "GDP per Capita",
+    y = "Continent", 
+    caption = "Source: Gapminder"
+  )
+```
+```{r}
+ggplot(raw_data, aes(lifeExp, continent))+
+  geom_boxplot(color = IMSCOL["blue", "full"])+
+  theme_minimal()+
+  stat_summary(fun = mean, geom = "point", col = IMSCOL["red", "full"])+
+  stat_summary(fun = mean, geom = "text", col = IMSCOL["red", "full"], 
+               position = position_nudge(x = 0, y = 0.5), 
+               aes(label = paste("Mean: ", round(..x.., digits = 2))))+
+  labs(
+    title = "Life Expectancy", 
+    subtitle = "by continent, 1952 - 2007", 
+    x = "Life Expectancy",
+    y = "Continent", 
+    caption = "Source: Gapminder"
+  )
+```
+
+At this point, two continents seem to stand out: Oceania and Europe. Both continents have the highest average GDP per capita and life expectancy. Since Oceania only has two countries worth of data, namely Australia and New Zealand, Europe seems to be of more interest. We will end up focusing on Europe for the latter part of this study but will still include all continents in the next section. 
+
+## Data Visualization and Linear Modeling
+
+Here we begin to narrow our focus to life expectancy and GDP per capita. A scatterplot will show if there appears to be some relationship between the two variables. 
+
+```{r}
+ggplot(raw_data, aes(gdpPercap, lifeExp, size = pop/10^6))+
+  geom_point(alpha = 0.2, color = IMSCOL["blue", "full"])+
+  facet_wrap(~continent)+
+  labs(
+    title = "Life Expectancy v. GDP per Capita by Continent",
+    subtitle = "1952 - 2007",
+    size = "Population (millions)",
+    x = "GDP per Capita",
+    y = "Life Expectancy",
+    caption = "Source: Gapminder"
+  )+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+As we can see, the presence of a relationship is dependent on which continent we are looking at. Visually, Africa has the lowest correlation and Oceania has the highest. As mentioned in the previous section, we only have two countries worth of data for Oceania and both countries are well developed. This is likely the cause for such a high correlation. Specific correlations are below. 
+
+```{r}
+get_correlation(data = raw_data %>% group_by(continent), 
+                formula = lifeExp ~ gdpPercap) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+Our visual analysis was almost spot on; Asia actually has a lower correlation than Africa. As expected, Oceania is the highest. Europe is the second highest correlation and has a much higher number of contributing countries. Europe, the Americas and - to some extent - Asia appear to have a *tipping point* where there isn't much of a relationship before a certain GDP per capita but afterwards there is a strong relationship. We'll shift our focus to see if we can identify the tipping points in Europe and the Americas, try to identify *why* the tipping point exists and whether or not we can remove those points and improve the fit of a linear model. 
+
+```{r}
+ggplot(raw_data %>% filter(continent == "Europe" | continent == "Americas"), aes(gdpPercap, lifeExp, color = factor(year)))+
+  facet_wrap(~continent)+
+  geom_point(alpha = 0.5)+
+  geom_vline(xintercept = 5000, color = IMSCOL["red" , "full"])+
+  scale_color_viridis_d()+
+  labs(
+    title = "Life expectancy v GDP per capita",
+    subtitle = "1952 - 2007",
+    color = "Year",
+    x = "GDP per Capita",
+    y = "Life Expectancy")+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+```
+
+Year seems to play a minor role, but not big enough to be the cause of the tipping point. The vertical red line on the charts is a GDP per capita of \$5000. This is a clear tipping point for Europe, a little less so for the Americas. Here, we filter out GDP per capita below this point for Europe, recalculate the correlation and compare to the full correlation. 
+
+```{r}
+europe_filtered <- raw_data %>% 
+  filter(continent == "Europe") %>% 
+  filter(gdpPercap >= 5000)
+
+europe <- raw_data %>% 
+  filter(continent == "Europe") 
+
+small_cor <- get_correlation(data = europe_filtered, 
+                formula = lifeExp ~ gdpPercap) %>% 
+  mutate(category = "Limited to GDP per capita at or above $5000", .before = cor)
+
+full_cor <- get_correlation(data = europe, 
+                            formula = lifeExp ~ gdpPercap) %>% 
+  mutate(category = "Including GDP per capita below $5000", .before = cor)
+
+
+full_join(small_cor, full_cor) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+Removing low GDP per capita values **does** improve the fit of a model. However, we haven't identified a cause. The scatterplot above colored by year shows that there is some older data that fits in with the newer data. The original scatterplot of this section shows that population is not a large factor either. With the information we have in this particular data set, there are no other possible causes for the tipping point. As such, we will keep all of the data point to build our model. Finding the cause of the low GDP data would be a great place for further analysis.
+
+Focusing on Europe, we can plot a least squares regression model over the scatterplot. The equation for the regression line is $\hat{y} = 65.3 + 0.000453x$.
+
+```{r}
+ggplot(raw_data %>% filter(continent == "Europe"), aes(gdpPercap, lifeExp))+
+  geom_point(alpha = 0.5, color = IMSCOL["blue", "full"])+
+  geom_smooth(method = "lm", se = FALSE, color = IMSCOL["red" , "full"])+
+  labs(
+    title = "Life expectancy v GDP per capita",
+    subtitle = "1952 - 2007",
+    x = "GDP per Capita",
+    y = "Life Expectancy")+
+  theme_minimal()+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+life_gdp_mod <- lm(formula = lifeExp ~ gdpPercap, 
+                   data = europe)
+
+pred <- linear_model_prediction(life_gdp_mod,52456)
+pred_2 <- linear_model_prediction(life_gdp_mod,40299)
+
+```
+
+Since over a decade has passed since this data was generated, we can use it to make predictions and check what actually happened as a way to check how accurate the model is. In 2020, the GDP per capita in the Netherlands was \$52456. Our model would predict a life expectancy of 89.1 years in the Netherlands in 2020. Actual life expectancy was 82.78. Our model over predicted by approximately seven years. France had a GDP per capita of \$40299 in 2020, predicting a life expectancy of 83.6 years. The actual life expectancy in France in 2020 was 83.13. Our model was within six months! Another area where additional research could be done is comparing *all* European countries in 2020 to the model in order to get a better idea of how accurate this is. 
+
+## Statistical Inference
+
+Let's take a step back and consider the tipping point for our linear model. We significantly increased the model's correlation when we removed the countries with a GDP per capita below \$5000. We'll run two hypothesis tests: one to determine if that is an unusually low GDP per capita and another to see if the predicted life expectancy would be unusually low. 
+
+### GDP per capita \& life expectancy tests
+```{r}
+pred_3 <- linear_model_prediction(life_gdp_mod, 5000)
+
+total <- europe %>% 
+  summarize(count = n())
+
+t_gdp <- (5000-mean(europe$gdpPercap))/(sd(europe$gdpPercap))
+t_gdp_tbl <- tibble(p_value = pt(t_gdp, total$count-1, lower.tail = TRUE), 
+                    stat = "GDP per capita")
+
+t_life <- (pred_3-mean(europe$lifeExp))/(sd(europe$lifeExp))
+t_life_tbl <- tibble(p_value = pt(t_life, total$count-1, lower.tail = TRUE),
+                     stat = "Life Expectancy")
+
+full_join(t_gdp_tbl, t_life_tbl) %>% 
+  kbl(linesep = "", booktabs = TRUE, align = "lc", caption = "") %>% 
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = c("striped", "hold_position"))
+```
+
+Since both p-values are above 0.05, we can conclude that the results of both tests are fail to reject the null hypothesis. We do not have enough evidence to support the claim that a GDP per capita of less than \$5000 is unusually low in Europe or to support the claim that a life expectancy of 67.6 is unusually low in Europe. 
+
+### Proprotional test on life expectancy
+
+Since Europe had the second highest average life expectancy, we will test some claims about the proportion of European countries with high and low life expectancy compared to the global proportion. For reference, the global average life expectancy is 59.47 years.
+
+The first test will be to determine if the proportion of European countries with a life expectancy higher than the global average is different from the proportion of non-European countries with a life expectancy higher than the global average. 
+
+```{r}
+g_avg_life <- raw_data %>% 
+  summarize(mean = mean(lifeExp))
+
+cat_test_data <- raw_data %>% 
+  mutate(is_greater_60 = 
+           case_when(
+             lifeExp >= g_avg_life$mean ~ 1,
+             lifeExp < g_avg_life$mean ~ 0
+           ),
+         samp =
+           case_when(
+             continent == "Europe" ~ "Europe",
+             TRUE ~ "Global"
+           )
+  ) %>% 
+  select(samp, is_greater_60) %>% 
+  group_by(samp) %>% 
+  summarize(count = n(),
+            prop_greater_60 = sum(is_greater_60)/count)
+  
+euro_prop <- cat_test_data %>% 
+  filter(samp == "Europe")
+
+global_prop <- cat_test_data %>% 
+  filter(samp != "Europe")
+  
+# need 2 sample test
+
+test_stat <- categorical_z(
+  euro_prop$prop_greater_60, 
+  global_prop$prop_greater_60,
+  360
+)
+
+p_val <- pnorm(test_stat, lower.tail = FALSE)
+
+```
+
+The hypotheses are: 
+
+$H_0: p =$ `r global_prop$prop_greater_60` 
+
+$H_a: p >$  `r global_prop$prop_greater_60`
+
+This test has a p-value of $2.93 \times 10^{-105}$ which is essentially 0. Then we reject the null hypothesis. We do have enough data to support the claim that the proportion of European countries with a life expectancy above the global average is higher than the proportion of non-European countries with a life expectancy above the global average. 
+
+## Conclusion
+
+Compared to the globe as a whole, Europe has a higher average life expectancy and a higher proportion of countries above the global average life expectancy. Additionally, life expectancy is strongly correlated to GDP per capita. Our linear model showed a correlation of 0.78 and did fairly well at predicting data from 2020 - over a decade beyond the models original domain. 

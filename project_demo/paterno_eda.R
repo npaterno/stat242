@@ -25,7 +25,7 @@ continents <- raw_data %>%
 # Descriptive statistics for numeric variables --------------------------
 
 ## What years do we have data on?
-project_data %>% 
+raw_data %>% 
   summarize(unique(year))
 
 ## Do we have data for each country for each year?
@@ -41,7 +41,7 @@ gdp_summary <- raw_data %>%
               values_from = five_num)
 
 ## Calculate the five number summary for gdp globally across all years
-global_gdp_summmary <- project_data %>% 
+global_gdp_summmary <- raw_data %>% 
   summarize(five_num = fivenum(gdpPercap))
 
 ## Calculate the mean and standard deviation for life expectancy by country
